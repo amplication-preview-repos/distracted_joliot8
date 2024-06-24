@@ -1,0 +1,58 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model TryOnSession {
+  createdAt DateTime  @default(now())
+  feedback  String?
+  id        String    @id @default(cuid())
+  outfit    Outfit?   @relation(fields: [outfitId], references: [id])
+  outfitId  String?
+  tryOnDate DateTime?
+  updatedAt DateTime  @updatedAt
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Outfit {
+  category      String?
+  createdAt     DateTime       @default(now())
+  description   String?
+  id            String         @id @default(cuid())
+  imageUrl      Json?
+  name          String?
+  price         Float?
+  tryOnSessions TryOnSession[]
+  updatedAt     DateTime       @updatedAt
+}
+
+model Feedback {
+  comment   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  rating    Int?
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model User {
+  avatar        Json?
+  createdAt     DateTime       @default(now())
+  email         String?        @unique
+  feedbacks     Feedback[]
+  firstName     String?
+  id            String         @id @default(cuid())
+  lastName      String?
+  password      String
+  phoneNumber   String?
+  roles         Json
+  tryOnSessions TryOnSession[]
+  updatedAt     DateTime       @updatedAt
+  username      String         @unique
+}
